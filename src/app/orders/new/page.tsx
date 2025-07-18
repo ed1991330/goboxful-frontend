@@ -5,9 +5,12 @@ import StepTwoForm from './StepTwoForm';
 import { OrderInfo, Producto } from './types';
 import Sidebar from '@/app/components/Sidebar';
 import PageHeader from '@/app/components/PageHeader';
+import { useAuth } from '@/contexts/AuthContext';
+const { user } = useAuth();
 
 export default function CreateOrderWizard() {
   const [step, setStep] = useState(1);
+  const { user } = useAuth();
 
   const [form, setForm] = useState<OrderInfo>({
     direccionRecepcion: '',
@@ -62,7 +65,10 @@ export default function CreateOrderWizard() {
       <Sidebar></Sidebar>
 
       <main className="flex-1 p-8">
-        <PageHeader  title="Crear orden" ></PageHeader>
+        <PageHeader  
+          title="Crear orden"
+          userFullName={user ? `${user.nombre} ${user.apellido}` : undefined}
+        ></PageHeader>
         <p className="text-sm text-gray-600 mb-6">Paso {step} de 2</p>
 
         {step === 1 && (

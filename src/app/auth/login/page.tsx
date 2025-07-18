@@ -1,20 +1,55 @@
 'use client';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { useAuth } from '@/contexts/AuthContext'; // ✅ IMPORTA EL CONTEXTO
+
 
 export default function LoginPage() {
   const router = useRouter();
+  const { login } = useAuth(); // ✅ OBTÉN LA FUNCIÓN login DEL CONTEXTO
   const [form, setForm] = useState({ email: '', password: '' });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    console.log('Login:', form);
+  const handleSubmit = async (e: React.FormEvent) => {
+  e.preventDefault();
+
+  try {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/login`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        correo: form.email,        // 👈 usa el nombre de campo que espera el backend
+        password: form.password,   // 👈 idem
+      }),
+    });
+    const text = await res.text(); // 👈 primero obtenemos como texto
+    
+    if (!res.ok) {
+      throw new Error(text || 'Error en el login');
+    }
+
+    if (!text) {
+      throw new Error('Credenciales incorrectas');
+    }
+
+    const data = JSON.parse(text); // 👈 ahora parseamos seguro
+
+    if (!data || !data.access_token) {
+      alert('Credenciales incorrectas');
+      return;
+    }
+
+    login(data.access_token, data.user);
     router.push('/orders/new');
-  };
+  } catch (err: any) {
+    alert(err.message);
+  }
+};
+
+
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50">

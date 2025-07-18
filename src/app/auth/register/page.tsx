@@ -19,16 +19,45 @@ export default function RegisterPage() {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    // Validación básica
-    if (form.contrasena !== form.repetirContrasena) {
-      alert('Las contraseñas no coinciden');
-      return;
+ const handleSubmit = async (e: React.FormEvent) => {
+  e.preventDefault();
+
+  if (form.contrasena !== form.repetirContrasena) {
+    alert('Las contraseñas no coinciden');
+    return;
+  }
+
+  try {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/users/register`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        nombre: form.nombre,
+        apellido: form.apellido,
+        sexo: form.sexo,
+        fechaNacimiento: form.fechaNacimiento,
+        correo: form.correo,
+        whatsapp: `503${form.whatsapp}`, // ya incluye el 503 o puedes dejarlo como `form.whatsapp`
+        password: form.contrasena,
+      }),
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(errorText || 'Error en el registro');
     }
-    console.log('Registro enviado:', form);
-    router.push('/auth/login'); // Redirige al login
-  };
+
+    const data = await response.json();
+    console.log('Registro exitoso:', data);
+    alert('Registro exitoso. Ahora puedes iniciar sesión.');
+    router.push('/auth/login');
+  } catch (error: any) {
+    console.error('Error en el registro:', error);
+    alert(error.message);
+  }
+};
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50">
