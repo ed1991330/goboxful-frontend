@@ -11,6 +11,7 @@ type User = {
 type AuthCtx = {
   user: User | null;
   token: string | null;
+  loading: boolean;
   login: (t: string, u: User) => void;
   logout: () => void;
 };
@@ -18,6 +19,7 @@ type AuthCtx = {
 const AuthContext = createContext<AuthCtx>({
   user: null,
   token: null,
+  loading: true,
   login: () => {},
   logout: () => {},
 });
@@ -25,6 +27,7 @@ const AuthContext = createContext<AuthCtx>({
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [token, setToken] = useState<string | null>(null);
+  const [loading, setLoading] = useState<boolean>(true);
 
   // cargar de localStorage (para refrescos de página)
   useEffect(() => {
@@ -34,6 +37,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       setToken(t);
       setUser(JSON.parse(u));
     }
+    setLoading(false);
   }, []);
 
   const login = (t: string, u: User) => {
@@ -51,7 +55,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ user, token, login, logout }}>
+    <AuthContext.Provider value={{ user, token, loading, login, logout }}>
       {children}
     </AuthContext.Provider>
   );

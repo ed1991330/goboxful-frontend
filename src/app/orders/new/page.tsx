@@ -1,16 +1,20 @@
 'use client';
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { useAuth } from '@/contexts/AuthContext';
+import { useProtectedRoute } from '@/hooks/useProtectedRoute';
 import StepOneForm from './StepOneForm';
 import StepTwoForm from './StepTwoForm';
 import { OrderInfo, Producto } from './types';
 import Sidebar from '@/app/components/Sidebar';
 import PageHeader from '@/app/components/PageHeader';
-import { useAuth } from '@/contexts/AuthContext';
-const { user } = useAuth();
 
 export default function CreateOrderWizard() {
+  useProtectedRoute(); // ✅ protege la ruta
+
   const [step, setStep] = useState(1);
-  const { user } = useAuth();
+  const { user, token } = useAuth();
+  const router = useRouter();
 
   const [form, setForm] = useState<OrderInfo>({
     direccionRecepcion: '',
@@ -54,21 +58,83 @@ export default function CreateOrderWizard() {
     setProductos(productos.filter((_, i) => i !== index));
   };
 
-  const enviarOrden = () => {
-    const ordenCompleta = { ...form, productos };
-    console.log('Orden enviada:', ordenCompleta);
-    alert('Orden enviada (simulado)');
+  const enviarOrden = async () => {
+    if (!token) {
+      alert('No estás autenticado');
+      return;
+    }
+
+    const payload = {
+      direccionRecoleccion: form.direccionRecepcion,
+      fechaProgramada: form.fecha,
+      nombres: form.nombre,
+      apellidos: form.apellido,
+      correoElectronico: form.correo,
+      telefono: form.telefono,
+      direccionDestinatario: form.direccionDestinatario,
+      departamento: form.departamento,
+      municipio: form.municipio,
+      puntoReferencia: form.puntoReferencia,
+      indicaciones: form.indicaciones,
+      productos: productos.map(p => ({
+        largo: Number(p.largo),
+        alto: Number(p.alto),
+        ancho: Number(p.ancho),
+        pesoLibras: `${p.peso} libras`,
+        contenido: p.contenido,
+      })),
+    };
+
+    try {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/orders`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(payload),
+      });
+
+      if (!res.ok) {
+        const text = await res.text();
+        throw new Error(text || 'Error al crear la orden');
+      }
+
+      const data = await res.json();
+      console.log('Orden enviada:', data);
+      alert('¡Orden enviada exitosamente!');
+
+      setForm({
+        direccionRecepcion: '',
+        fecha: '',
+        nombre: '',
+        apellido: '',
+        correo: '',
+        telefono: '',
+        direccionDestinatario: '',
+        departamento: '',
+        municipio: '',
+        puntoReferencia: '',
+        indicaciones: '',
+      });
+
+      setProductos([]);
+      setProductoActual({ largo: '', alto: '', ancho: '', peso: '', contenido: '' });
+      setStep(1);
+    } catch (error: any) {
+      console.error('Error al enviar orden:', error);
+      alert(error.message);
+    }
   };
 
   return (
     <div className="min-h-screen flex bg-gray-100">
-      <Sidebar></Sidebar>
-
+      <Sidebar />
       <main className="flex-1 p-8">
-        <PageHeader  
+        <PageHeader
           title="Crear orden"
           userFullName={user ? `${user.nombre} ${user.apellido}` : undefined}
-        ></PageHeader>
+        />
         <p className="text-sm text-gray-600 mb-6">Paso {step} de 2</p>
 
         {step === 1 && (

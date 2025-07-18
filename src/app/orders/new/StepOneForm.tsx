@@ -1,4 +1,5 @@
 'use client';
+import { useState } from 'react';
 import { OrderInfo } from './types';
 
 interface Props {
@@ -8,9 +9,42 @@ interface Props {
 }
 
 export default function StepOneForm({ data, onChange, onNext }: Props) {
+  const [error, setError] = useState('');
+
+  const handleNext = () => {
+    // Campos requeridos
+    const camposRequeridos = [
+      'direccionRecepcion',
+      'fecha',
+      'nombre',
+      'apellido',
+      'telefono',
+      'correo',
+      'direccionDestinatario',
+      'departamento',
+      'municipio'
+    ];
+
+    const camposVacios = camposRequeridos.filter(campo => !data[campo as keyof OrderInfo]);
+
+    if (camposVacios.length > 0) {
+      setError('Por favor completa todos los campos obligatorios.');
+      return;
+    }
+
+    setError('');
+    onNext();
+  };
+
   return (
     <form className="space-y-6 bg-white p-6 rounded-md shadow-md">
       <h2 className="text-md font-semibold text-gray-700">Completa los datos</h2>
+
+      {error && (
+        <div className="text-red-600 text-sm font-medium border border-red-300 bg-red-50 px-4 py-2 rounded">
+          {error}
+        </div>
+      )}
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <input className="input-style" placeholder="Dirección de recepción" name="direccionRecepcion" value={data.direccionRecepcion} onChange={onChange} />
@@ -37,7 +71,11 @@ export default function StepOneForm({ data, onChange, onNext }: Props) {
       </div>
 
       <div className="text-right pt-4">
-        <button type="button" onClick={onNext} className="bg-indigo-600 text-white px-6 py-2 rounded-md hover:bg-indigo-700">
+        <button
+          type="button"
+          onClick={handleNext}
+          className="bg-indigo-600 text-white px-6 py-2 rounded-md hover:bg-indigo-700"
+        >
           Siguiente →
         </button>
       </div>
