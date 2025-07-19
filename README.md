@@ -1,36 +1,63 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Goboxful - Frontend
 
-## Getting Started
+Frontend del sistema de envíos **Goboxful**, desarrollado en [Next.js](https://nextjs.org/) con autenticación mediante JWT, protección de rutas, wizard de creación de órdenes y exportación a Excel.
 
-First, run the development server:
+## 🚀 Tecnologías utilizadas
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+- [Next.js 13+ (App Router)](https://nextjs.org/)
+- [React](https://reactjs.org/)
+- [Tailwind CSS](https://tailwindcss.com/)
+- [TypeScript](https://www.typescriptlang.org/)
+- [XLSX](https://github.com/SheetJS/sheetjs) para exportación a Excel
+- [FileSaver.js](https://github.com/eligrey/FileSaver.js)
+- Context API para manejo de autenticación
+
+## 🔐 Funcionalidades principales
+
+- Registro y login de usuarios
+- Validación de sesión con token JWT
+- Redirección automática si el token expira
+- Creación de órdenes en formato wizard de 2 pasos
+- Validación de formularios paso a paso
+- Listado histórico de órdenes
+- Filtro por fecha de creación (`createdDate`)
+- Exportación de órdenes seleccionadas a Excel
+
+## 🛠️ Estructura de carpetas
+
+```
+/app
+  /auth         → Pantallas de login y registro
+  /dashboard    → Área protegida
+  /orders       → Historial y creación de órdenes
+/components     → Reutilizables (Sidebar, PageHeader, etc.)
+/contexts       → AuthContext
+/hooks          → useProtectedRoute
+/utils          → jwtUtils (validación de token)
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 📦 Instalación y ejecución
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Clona el proyecto y luego ejecuta:
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+npm install
+npm run dev
+```
 
-## Learn More
+Abre [http://localhost:3000](http://localhost:3000) para ver la app.
 
-To learn more about Next.js, take a look at the following resources:
+## 🔐 Variables de entorno
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Crea un archivo `.env.local` en la raíz del proyecto y agrega:
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```
+NEXT_PUBLIC_API_URL=http://localhost:3001
+```
 
-## Deploy on Vercel
+Reemplaza la URL por la de tu backend desplegado si aplica.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## 👤 Autor
+
+Desarrollado por **Eduardo Molina**.

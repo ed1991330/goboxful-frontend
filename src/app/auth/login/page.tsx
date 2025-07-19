@@ -1,12 +1,12 @@
 'use client';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { useAuth } from '@/contexts/AuthContext'; // ✅ IMPORTA EL CONTEXTO
+import { useAuth } from '@/contexts/AuthContext'; // IMPORTA EL CONTEXTO
 
 
 export default function LoginPage() {
   const router = useRouter();
-  const { login } = useAuth(); // ✅ OBTÉN LA FUNCIÓN login DEL CONTEXTO
+  const { login } = useAuth(); // FUNCIÓN login DEL CONTEXTO
   const [form, setForm] = useState({ email: '', password: '' });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -21,11 +21,11 @@ export default function LoginPage() {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        correo: form.email,        // 👈 usa el nombre de campo que espera el backend
-        password: form.password,   // 👈 idem
+        correo: form.email,        
+        password: form.password,   
       }),
     });
-    const text = await res.text(); // 👈 primero obtenemos como texto
+    const text = await res.text();
     
     if (!res.ok) {
       throw new Error(text || 'Error en el login');
@@ -35,7 +35,7 @@ export default function LoginPage() {
       throw new Error('Credenciales incorrectas');
     }
 
-    const data = JSON.parse(text); // 👈 ahora parseamos seguro
+    const data = JSON.parse(text); 
 
     if (!data || !data.access_token) {
       alert('Credenciales incorrectas');
@@ -65,7 +65,7 @@ export default function LoginPage() {
             <input
               type="email"
               name="email"
-              placeholder="Digita tu correo"
+              placeholder="Correo"
               className="w-full px-4 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
               value={form.email}
               onChange={handleChange}
@@ -80,7 +80,7 @@ export default function LoginPage() {
             <input
               type="password"
               name="password"
-              placeholder="Digita el NIT del comercio"
+              placeholder="*****"
               className="w-full px-4 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
               value={form.password}
               onChange={handleChange}

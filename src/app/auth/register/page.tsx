@@ -39,7 +39,7 @@ export default function RegisterPage() {
         sexo: form.sexo,
         fechaNacimiento: form.fechaNacimiento,
         correo: form.correo,
-        whatsapp: `503${form.whatsapp}`, // ya incluye el 503 o puedes dejarlo como `form.whatsapp`
+        whatsapp: `503${form.whatsapp}`, 
         password: form.contrasena,
       }),
     });

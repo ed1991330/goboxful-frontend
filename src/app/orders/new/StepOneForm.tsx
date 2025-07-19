@@ -4,15 +4,19 @@ import { OrderInfo } from './types';
 
 interface Props {
   data: OrderInfo;
-  onChange: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void;
+  onChange: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => void;
   onNext: () => void;
 }
+
+const departamentos = {
+  'San Salvador': ['San Salvador', 'Soyapango', 'Mejicanos'],
+  'La Libertad': ['Santa Tecla', 'Antiguo Cuscatlán', 'Colón']
+};
 
 export default function StepOneForm({ data, onChange, onNext }: Props) {
   const [error, setError] = useState('');
 
   const handleNext = () => {
-    // Campos requeridos
     const camposRequeridos = [
       'direccionRecepcion',
       'fecha',
@@ -24,14 +28,11 @@ export default function StepOneForm({ data, onChange, onNext }: Props) {
       'departamento',
       'municipio'
     ];
-
     const camposVacios = camposRequeridos.filter(campo => !data[campo as keyof OrderInfo]);
-
     if (camposVacios.length > 0) {
       setError('Por favor completa todos los campos obligatorios.');
       return;
     }
-
     setError('');
     onNext();
   };
@@ -62,8 +63,19 @@ export default function StepOneForm({ data, onChange, onNext }: Props) {
 
         <input className="input-style md:col-span-2" placeholder="Dirección del destinatario" name="direccionDestinatario" value={data.direccionDestinatario} onChange={onChange} />
 
-        <input className="input-style" placeholder="Departamento" name="departamento" value={data.departamento} onChange={onChange} />
-        <input className="input-style" placeholder="Municipio" name="municipio" value={data.municipio} onChange={onChange} />
+        <select className="input-style" name="departamento" value={data.departamento} onChange={onChange}>
+          <option value="">Seleccione un departamento</option>
+          {Object.keys(departamentos).map(dep => (
+            <option key={dep} value={dep}>{dep}</option>
+          ))}
+        </select>
+
+        <select className="input-style" name="municipio" value={data.municipio} onChange={onChange}>
+          <option value="">Seleccione un municipio</option>
+          {data.departamento && departamentos[data.departamento]?.map(mun => (
+            <option key={mun} value={mun}>{mun}</option>
+          ))}
+        </select>
 
         <input className="input-style md:col-span-2" placeholder="Punto de referencia" name="puntoReferencia" value={data.puntoReferencia} onChange={onChange} />
 
